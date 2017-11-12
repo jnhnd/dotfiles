@@ -2,7 +2,7 @@
 setopt IGNOREEOF
 
 # 環境変数
-export LANG=ja_JP.UTF-8
+#export LANG=ja_JP.UTF-8
 
 # 色を使用出来るようにする
 autoload -Uz colors
@@ -173,6 +173,12 @@ export XDG_CONFIG_HOME=~/.config
 export TERM=xterm-256color
 export PATH=/home/jnhnd/.local/bin/:$PATH
 
+# fzf
+export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
+
+########################################
+alias open='xdg-open'
+
 ########################################
 # Haskell
 alias ghc='stack ghc'
@@ -182,3 +188,5 @@ alias runghc='stack runghc'
 ########################################
 # Rust
 export PATH=$HOME/.cargo/bin:$PATH
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
