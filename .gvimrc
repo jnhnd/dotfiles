@@ -1,44 +1,22 @@
+set background=dark
 " ウィンドウの縦幅
-set lines=54
+set lines=48
 " ウィンドウの横幅
-set columns=120
+set columns=80
 " 半透明化
-" autocmd GUIEnter * set transparency=220
+set transparency=10
 
 function! s:toggle_transparence()
-    if &transparency == 220
+    if &transparency == 10
         set transparency=0
     else
-        set transparency=220
+        set transparency=10
     endif
 endfunction
 nnoremap <silent> <Space>tt :<C-u>call <SID>toggle_transparence()<CR>
 
-"---------------------------------------------------------------------------
-" フォント設定:
-"
-if has('win32')
-  " Windows用
-  set guifont=Consolas:h11
-  set guifontwide=MeiryoKe_Gothic:h11
-  "set guifont=MS_Gothic:h12:cSHIFTJIS
-  "set guifont=MS_Mincho:h12:cSHIFTJIS
-  " 行間隔の設定
-  set linespace=0
-  " 一部のUCS文字の幅を自動計測して決める
-  if has('kaoriya')
-    set ambiwidth=auto
-  endif
-elseif has('unix')
-  "set guifont=Inconsolata\ 13
-  set guifont=Mim\ for\ Powerline\ 13.5
-  set linespace=0
-elseif has('mac')
-  set guifont=Osaka－等幅:h14
-elseif has('xfontset')
-  " UNIX用 (xfontsetを使用)
-  set guifontset=a14,r14,k14
-endif
+set guifont=Ricty\ for\ Powerline:h18
+" set guifontwide=Ricty:h14
 
 " メニューバー非表示
 set guioptions-=m
@@ -51,8 +29,6 @@ set guioptions-=L
 set guioptions-=e
 set showtabline=2
 set cmdheight=1
-" 選択にコマンドラインを使用
-set guioptions+=c
+set cursorline
 
 set visualbell t_vb=
-

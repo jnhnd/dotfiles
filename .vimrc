@@ -9,10 +9,10 @@ scriptencoding utf-8
 
 " 自動生成ファイルの出力先指定
 if !has('nvim')
-    let back_path = '~/.vim/.backup'
-    let swap_path = '~/.vim/.swap'
-    let info_path = '~/.vim/.viminfo/viminfo.txt'
-    let undo_path = '~/.vim/.undo'
+    let back_path = expand('~/.vim/backup')
+    let swap_path = expand('~/.vim/swap')
+    let info_path = expand('~/.vim/viminfo')
+    let undo_path = expand('~/.vim/undo')
 
     if !isdirectory(back_path)
         call mkdir(back_path, "p")
@@ -29,8 +29,8 @@ if !has('nvim')
 
     set backupdir=~/.vim/backup
     set directory=~/.vim/swap
-    set viminfo+=n~/.vim/.viminfo/viminfo.txt
-    set undodir=~/.vin/.undo
+    set viminfo+=n~/.vim/viminfo/viminfo.txt
+    set undodir=~/.vin/undo
 endif
 
 " 編集中のファイルが変更されたら自動で読み直す
