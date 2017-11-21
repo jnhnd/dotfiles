@@ -7,30 +7,33 @@ set encoding=utf-8
 set fenc=utf-8
 scriptencoding utf-8
 
+" ファイルフォーマットを指定
+set fileformats=unix,dos,mac
+
 " 自動生成ファイルの出力先指定
 if !has('nvim')
     let back_path = expand('~/.vim/backup')
     let swap_path = expand('~/.vim/swap')
-    let info_path = expand('~/.vim/viminfo')
     let undo_path = expand('~/.vim/undo')
-
+    let info_path = expand('~/.vim/viminfo')
+    " make directory
     if !isdirectory(back_path)
         call mkdir(back_path, "p")
     endif
     if !isdirectory(swap_path)
         call mkdir(swap_path, "p")
     endif
-    if !isdirectory(info_path)
-        call mkdir(info_path, "p")
-    endif
     if !isdirectory(undo_path)
         call mkdir(undo_path, "p")
     endif
-
+    if !isdirectory(info_path)
+        call mkdir(info_path, "p")
+    endif
+    " set directory
     set backupdir=~/.vim/backup
     set directory=~/.vim/swap
-    set viminfo+=n~/.vim/viminfo/viminfo.txt
     set undodir=~/.vin/undo
+    set viminfo+=n~/.vim/viminfo/viminfo.txt
 endif
 
 " 編集中のファイルが変更されたら自動で読み直す
@@ -46,7 +49,7 @@ set title
 " 行番号を表示
 set number
 " 現在の行を強調表示
-"set cursorline
+" set cursorline
 " 行末の1文字先までカーソルを移動できるように
 set virtualedit=onemore
 " インデントはスマートインデント
@@ -55,6 +58,7 @@ set smartindent
 set visualbell
 " 括弧入力時の対応する括弧を表示
 set showmatch
+set matchtime=1
 " ステータスラインを常に表示
 set laststatus=2
 " コマンドラインの補完
@@ -91,6 +95,12 @@ set backspace=indent,eol,start
 set clipboard=unnamed
 " 畳み込み禁止
 set nofoldenable
+" 行に余裕をもたせてスクロールする
+set scrolloff=8
+" 長い行を表示する
+set display=lastline
+" 補完メニューの高さ
+set pumheight=10
 
 
 "================================================================
@@ -107,14 +117,14 @@ autocmd BufEnter * execute 'lcd ' fnameescape(expand('%:p:h'))
 autocmd FileType * setlocal formatoptions-=ro
 
 " 背景無効化
-au VimEnter,ColorScheme * highlight Normal ctermbg=NONE
-au VimEnter,ColorScheme * highlight NonText ctermbg=NONE
-au VimEnter,ColorScheme * highlight LineNr ctermbg=NONE
-au VimEnter,ColorScheme * highlight SpecialKey ctermbg=NONE
-au VimEnter,ColorScheme * highlight ErrorMsg ctermbg=NONE
-au VimEnter,ColorScheme * highlight HtmlTag ctermbg=NONE
-au VimEnter,ColorScheme * highlight HtmlEndTag ctermbg=NONE
-au VimEnter,ColorScheme * highlight SpecialComment ctermbg=NONE
+" au VimEnter,ColorScheme * highlight Normal ctermbg=NONE
+" au VimEnter,ColorScheme * highlight NonText ctermbg=NONE
+" au VimEnter,ColorScheme * highlight LineNr ctermbg=NONE
+" au VimEnter,ColorScheme * highlight SpecialKey ctermbg=NONE
+" au VimEnter,ColorScheme * highlight ErrorMsg ctermbg=NONE
+" au VimEnter,ColorScheme * highlight HtmlTag ctermbg=NONE
+" au VimEnter,ColorScheme * highlight HtmlEndTag ctermbg=NONE
+" au VimEnter,ColorScheme * highlight SpecialComment ctermbg=NONE
 
 
 "================================================================
@@ -151,13 +161,36 @@ nnoremap + <c-a>
 nnoremap - <c-x>
 nnoremap <Enter> o<Esc>
 nnoremap <Esc><Esc> :noh<CR>
+nnoremap <m-j> <c-w>+
+nnoremap <m-k> <c-w>-
+nnoremap <m-h> <c-w><
+nnoremap <m-l> <c-w>>
 
 " コマンドモードでのキーマッピング
 cnoremap <c-p> <up>
 cnoremap <c-n> <down>
 
 " 挿入モードでのキーマッピング
-"inoremap jj <Esc>
+" inoremap jj <Esc>
+
+"================================================================
+" ユーザ定義コマンド
+"================================================================
+if has('win32') || has('win64')
+    " markdown to html
+    function! s:markdown_to_html()
+        write
+        !md2html.bat %
+    endfunction
+    command! Md2html call s:markdown_to_html()
+    " markdown to docx
+    function! s:markdown_to_docx()
+        write
+        !md2docx.bat %
+    endfunction
+    command! Md2docx call s:markdown_to_docx()
+endif
+
 
 " ===============================================================
 " Plugin
@@ -166,30 +199,45 @@ cnoremap <c-n> <down>
 call plug#begin('~/.vim/plugged')
 
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
+
+" Look
 Plug 'yuttie/hydrangea-vim'
+Plug 'mkarmona/materialbox'
 Plug 'itchyny/lightline.vim'
+
+" File
 Plug 'scrooloose/nerdtree'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+if has('win32') || has('win64')
+    Plug 'kien/ctrlp.vim'
+endif
+
+" Edit
 Plug 'tomtom/tcomment_vim'
 Plug 'junegunn/vim-easy-align'
 
 call plug#end()
 
+"================================================================
+" プラグイン設定
+"================================================================
+
+" colorscheme
 colorscheme hydrangea
 
+" lightline
 let g:lightline = {
-        \ 'colorscheme': 'hydrangea',
-        \ 'component': {
-        \   'readonly': '%{&readonly?"\u2b64":""}',
-        \ },
-        \ 'separator': { 'left': "\u2b80", 'right': "\u2b82" },
-        \ 'subseparator': { 'left': "\u2b81", 'right': "\u2b83" }
-        \ }
+            \ 'colorscheme': 'hydrangea',
+            \ 'component': {
+            \   'readonly': '%{&readonly?"\u2b64":""}',
+            \ },
+            \ 'separator': { 'left': "\u2b80", 'right': "\u2b82" },
+            \ 'subseparator': { 'left': "\u2b81", 'right': "\u2b83" }
+            \ }
 let g:lightline.tabline = {
-        \ 'left': [ [ 'tabs' ] ],
-        \ 'right': [ [ 'close' ] ] }
-" lightline 色の設定
+            \ 'left': [ [ 'tabs' ] ],
+            \ 'right': [ [ 'close' ] ] }
 let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
 let s:p.normal.left = [ ['darkestgreen', 'brightgreen', 'bold'], ['white', 'gray4'] ]
 let s:p.normal.right = [ ['gray5', 'gray10'], ['gray9', 'gray4'], ['gray8', 'gray2'] ]
@@ -203,10 +251,10 @@ let s:p.normal.middle = [ [ 'gray7', 'gray2' ] ]
 let s:p.insert.middle = [ [ 'mediumcyan', 'darkestblue' ] ]
 let s:p.replace.middle = s:p.normal.middle
 let s:p.replace.right = s:p.normal.right
-let s:p.tabline.left = [ [ 'gray9', 'gray2' ] ]
+let s:p.tabline.left = [ [ 'gray9', 'gray4' ] ]
 let s:p.tabline.tabsel = [ [ 'darkestgreen', 'brightgreen' ] ]
-let s:p.tabline.middle = [ [ 'gray9', 'gray4' ] ]
-let s:p.tabline.right = [ [ 'gray9', 'gray2' ] ]
+let s:p.tabline.middle = [ [ 'gray7', 'gray2' ] ]
+let s:p.tabline.right = [ [ 'gray9', 'gray4' ] ]
 let s:p.normal.error = [ [ 'gray9', 'brightestred' ] ]
 let s:p.normal.warning = [ [ 'gray1', 'yellow' ] ]
 let g:lightline#colorscheme#powerline#palette = lightline#colorscheme#fill(s:p)
@@ -215,20 +263,41 @@ let g:lightline.component_expand = {
 let g:lightline.component_type = {
             \ 'tabs': 'tabsel' }
 
-let g:fzf_commands_expect = 'enter'
-if executable('rg')
-    set grepprg=rg\ --vimgrep
-    command! -bang -nargs=* Rg
-        \ call fzf#vim#grep(
-        \   'rg --line-number --no-heading '.shellescape(<q-args>), 1,
-        \   fzf#vim#with_preview({'options': '--exact --reverse'}, 'right:50%:wrap'))
-endif
-nnoremap <Space>p :Commands<CR>
-nnoremap <Space>ff :Files ~/<CR>
-nnoremap <Space>fg :GFiles<CR>
-nnoremap <Space>fh :History<CR>
-nnoremap <Space>fb :Buffers<CR>
-nnoremap <Space>fr :Rg<CR>
-
+" NERDTree
 nnoremap <Space>fn :NERDTreeFind<CR>
 nnoremap <Space>ft :NERDTreeToggle<CR>
+
+" fzf
+if executable('fzf')
+    let g:fzf_commands_expect = 'enter'
+    if executable('rg')
+        set grepprg=rg\ --vimgrep
+        command! -bang -nargs=* Rg
+                    \ call fzf#vim#grep(
+                    \   'rg --line-number --no-heading '.shellescape(<q-args>), 1,
+                    \   fzf#vim#with_preview({'options': '--exact --reverse'}, 'right:50%:wrap'))
+    endif
+    " fzf keymap
+    nnoremap <Space>p :Commands<CR>
+    nnoremap <Space>ff :Files ~/<CR>
+    nnoremap <Space>fg :GFiles<CR>
+    nnoremap <Space>fh :History<CR>
+    nnoremap <Space>fb :Buffers<CR>
+    nnoremap <Space>fr :Rg<CR>
+endif
+
+" ctrlp
+if has('win32') || has('win64')
+    let g:ctrlp_cmd = 'CtrlPMRUFiles'
+    let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:20,result:50'
+    let g:ctrlp_root_markers = ['Cargo.toml', 'stack.yaml', 'Gemfile']
+    let g:ctrlp_working_path_mode = 'ra'
+    let g:ctrlp_mruf_max = 500
+    let g:ctrlp_open_new_file = 'h'
+    let g:ctrlp_use_migemo = 1
+    if executable('rg')
+        let g:ctrlp_user_command = 'rg %s --files --hidden --no-ignore --follow --color=never --glob "!.git/*"'
+        let g:ctrlp_use_caching = 0
+    endif
+endif
+
