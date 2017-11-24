@@ -1,0 +1,45 @@
+// 既定の設定を上書きするには、このファイル内に設定を挿入します
+{
+    "editor.fontSize": 14,
+    "editor.lineHeight": 16,
+    "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?_ \n",
+    "terminal.integrated.shell.windows": "C:\\Program Files\\Git\\bin\\bash.exe",
+    "window.zoomLevel": 0,
+    "vim.enableNeovim": true,
+    "vim.useSystemClipboard": true,
+    "vim.disableAnnoyingNeovimMessage": true,
+    "vim.otherModesKeyBindingsNonRecursive": [
+        {
+            "before": [
+                "space"
+            ],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.showCommands",
+                    "args": []
+                }
+            ]
+        }
+    ],
+    "rust.rustLangSrcPath": "~/.rustup/toolchains/nightly-x86_64-pc-windows-msvc/lib/rustlib/src/rust/src",
+    "rust.mode": "rls",
+    "rust.rustup": {
+        "nightlyToolchain": "nightly-x86_64-pc-windows-msvc",
+        "toolchain": "nightly-x86_64-pc-windows-msvc"
+    },
+    "rust.rls": {
+        "executable": "rustup",
+        "args": [
+            "run",
+            "nightly",
+            "rls"
+        ],
+        "useRustfmt": true
+    },
+    "window.menuBarVisibility": "toggle",
+    "workbench.colorTheme": "Sublime Material Theme - Dark",
+    "zenMode.hideStatusBar": false,
+    "zenMode.hideActivityBar": false,
+    "editor.minimap.enabled": false
+}
