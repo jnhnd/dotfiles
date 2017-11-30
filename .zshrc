@@ -171,13 +171,14 @@ esac
 ########################################
 export XDG_CONFIG_HOME=~/.config
 export TERM=xterm-256color
-export PATH=/home/jnhnd/.local/bin/:$PATH
+export PATH=/home/jnhnd/.local/bin:$PATH
+export PATH=/usr/local/bin:$PATH
 
 # fzf
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
 
 ########################################
-alias open='xdg-open'
+# alias open='xdg-open'
 
 ########################################
 # Haskell
