@@ -171,8 +171,9 @@ esac
 ########################################
 export XDG_CONFIG_HOME=~/.config
 export TERM=xterm-256color
-export PATH=/home/jnhnd/.local/bin:$PATH
+# export PATH=/home/jnhnd/.local/bin:$PATH
 export PATH=/usr/local/bin:$PATH
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 
 # fzf
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
@@ -191,3 +192,8 @@ alias runghc='stack runghc'
 export PATH=$HOME/.cargo/bin:$PATH
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+eval "$(rbenv init -)"
+alias vim='env_LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
+
+export PATH=/Users/jhonda/.local/bin:$PATH

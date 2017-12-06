@@ -101,7 +101,7 @@ set nofoldenable
 autocmd QuickFixCmdPost *grep* cwindow
 
 " ディレクトリ自動変更
-autocmd BufEnter * execute 'lcd ' fnameescape(expand('%:p:h'))
+" autocmd BufEnter * execute 'lcd ' fnameescape(expand('%:p:h'))
 
 " ペースト時の自動インデントと自動コメントアウトの無効化
 autocmd FileType * setlocal formatoptions-=ro
@@ -161,10 +161,12 @@ cnoremap <c-n> <down>
 
 " ===============================================================
 " Plugin
+" for vim-plug
 " ===============================================================
 
 call plug#begin('~/.vim/plugged')
 
+Plug 'vim-jp/vimdoc-ja'
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 Plug 'yuttie/hydrangea-vim'
 Plug 'itchyny/lightline.vim'
@@ -173,6 +175,23 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'tomtom/tcomment_vim'
 Plug 'junegunn/vim-easy-align'
+
+Plug 'Shougo/neocomplcache'
+Plug 'Shougo/neosnippet-snippets'
+Plug 'tpope/vim-rails'
+Plug 'w0rp/ale'
+Plug 'kana/vim-smartinput'
+Plug 'cohama/vim-smartinput-endwise'
+Plug 'slim-template/vim-slim'
+Plug 'tpope/vim-haml'
+Plug 'digitaltoad/vim-pug'
+Plug 'mattn/emmet-vim'
+Plug 'tpope/vim-surround'
+Plug 'hail2u/vim-css3-syntax'
+Plug 'taichouchou2/html5.vim'
+Plug 'pangloss/vim-javascript'
+Plug 'kchmck/vim-coffee-script'
+Plug 'szw/vim-tags'
 
 call plug#end()
 
@@ -232,3 +251,15 @@ nnoremap <Space>fr :Rg<CR>
 
 nnoremap <Space>fn :NERDTreeFind<CR>
 nnoremap <Space>ft :NERDTreeToggle<CR>
+
+" smartinput
+call smartinput_endwise#define_default_rules()
+
+" ruby
+compiler ruby
+let ruby_space_errors=1
+
+if has('mac')
+    let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+    let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+endif
