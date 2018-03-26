@@ -174,7 +174,9 @@ export TERM=xterm-256color
 export PATH=/home/jnhnd/.local/bin/:$PATH
 
 # fzf
-export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
+# export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
+export FZF_DEFAULT_COMMAND='git ls-tree -r --name-only HEAD || rg --files || fd .'
+export SKIM_DEFAULT_COMMAND='git ls-tree -r --name-only HEAD || rg --files || fd .'
 
 ########################################
 alias open='xdg-open'
@@ -190,3 +192,5 @@ alias runghc='stack runghc'
 export PATH=$HOME/.cargo/bin:$PATH
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export NVIM_GTK_NO_HEADERBAR=1
