@@ -1,9 +1,46 @@
+" vim-plug Installation
+"
+" Download plug.vim and put it in the "autoload" directory.
+" Vim
+" Unix
+"
+" curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+"     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+"
+" You can automate the process by putting the command in your Vim configuration file as suggested here.
+" Windows (PowerShell)
+"
+" md ~\vimfiles\autoload
+" $uri = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+" (New-Object Net.WebClient).DownloadFile(
+"   $uri,
+"   $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath(
+"     "~\vimfiles\autoload\plug.vim"
+"   )
+" )
+"
+" Neovim
+" Unix
+"
+" curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+"     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+"
+" Windows (PowerShell)
+"
+" md ~\AppData\Local\nvim\autoload
+" $uri = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+" (New-Object Net.WebClient).DownloadFile(
+"   $uri,
+"   $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath(
+"     "~\AppData\Local\nvim\autoload\plug.vim"
+"   )
+" )
+
 "================================================================
 " 基本設定
 "================================================================
 
 " エンコーディングを設定
-set encoding=utf-8
 set fenc=utf-8
 scriptencoding utf-8
 
@@ -46,7 +83,7 @@ set title
 " 行番号を表示
 set number
 " 現在の行を強調表示
-"set cursorline
+set cursorline
 " 行末の1文字先までカーソルを移動できるように
 set virtualedit=onemore
 " インデントはスマートインデント
@@ -88,34 +125,23 @@ set whichwrap=b,s,h,l,[,],<,>
 " BackSpace を空白、行頭、行末でも可能に
 set backspace=indent,eol,start
 " クリップボードへのコピー
-set clipboard=unnamed
+set clipboard+=unnamed,unnamedplus
 " 畳み込み禁止
 set nofoldenable
+" スクロールに行数の余裕をもたせる
+set scrolloff=7
 
 
 "================================================================
 " 自動コマンド
 "================================================================
 
-" Quickfix の自動化
-autocmd QuickFixCmdPost *grep* cwindow
-
 " ディレクトリ自動変更
-autocmd BufEnter * execute 'lcd ' fnameescape(expand('%:p:h'))
+" autocmd BufEnter * execute 'lcd ' fnameescape(expand('%:p:h'))
+" autocmd BufEnter * if expand('%:p') !~ '://' | execute 'lcd ' fnameescape(expand('%:p:h')) | endif
 
 " ペースト時の自動インデントと自動コメントアウトの無効化
 autocmd FileType * setlocal formatoptions-=ro
-
-" 背景無効化
-au VimEnter,ColorScheme * highlight Normal ctermbg=NONE
-au VimEnter,ColorScheme * highlight NonText ctermbg=NONE
-au VimEnter,ColorScheme * highlight LineNr ctermbg=NONE
-au VimEnter,ColorScheme * highlight SpecialKey ctermbg=NONE
-au VimEnter,ColorScheme * highlight ErrorMsg ctermbg=NONE
-au VimEnter,ColorScheme * highlight HtmlTag ctermbg=NONE
-au VimEnter,ColorScheme * highlight HtmlEndTag ctermbg=NONE
-au VimEnter,ColorScheme * highlight SpecialComment ctermbg=NONE
-
 
 "================================================================
 " カーソル形状
@@ -157,63 +183,39 @@ cnoremap <c-p> <up>
 cnoremap <c-n> <down>
 
 " 挿入モードでのキーマッピング
-"inoremap jj <Esc>
+inoremap jj <Esc>
+
 
 " ===============================================================
 " Plugin
 " ===============================================================
 
-call plug#begin('~/.vim/plugged')
+call plug#begin('~/.local/share/nvim/plugged')
 
+Plug 'vim-jp/vimdoc-ja'
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
-Plug 'yuttie/hydrangea-vim'
+Plug 'honjet/hydrangea-vim'
 Plug 'itchyny/lightline.vim'
+Plug 'ryanoasis/vim-devicons'
 Plug 'scrooloose/nerdtree'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'tomtom/tcomment_vim'
 Plug 'junegunn/vim-easy-align'
+Plug 'tpope/vim-fugitive'
+Plug 'kana/vim-smartinput'
+Plug 'airblade/vim-rooter'
+Plug 'tpope/vim-surround'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+
+Plug 'w0rp/ale'
 
 call plug#end()
 
 colorscheme hydrangea
 
-let g:lightline = {
-        \ 'colorscheme': 'hydrangea',
-        \ 'component': {
-        \   'readonly': '%{&readonly?"\u2b64":""}',
-        \ },
-        \ 'separator': { 'left': "\u2b80", 'right': "\u2b82" },
-        \ 'subseparator': { 'left': "\u2b81", 'right': "\u2b83" }
-        \ }
-let g:lightline.tabline = {
-        \ 'left': [ [ 'tabs' ] ],
-        \ 'right': [ [ 'close' ] ] }
-" lightline 色の設定
-let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
-let s:p.normal.left = [ ['darkestgreen', 'brightgreen', 'bold'], ['white', 'gray4'] ]
-let s:p.normal.right = [ ['gray5', 'gray10'], ['gray9', 'gray4'], ['gray8', 'gray2'] ]
-let s:p.inactive.right = [ ['gray1', 'gray5'], ['gray4', 'gray1'], ['gray4', 'gray0'] ]
-let s:p.inactive.left = s:p.inactive.right[1:]
-let s:p.insert.left = [ ['darkestcyan', 'white', 'bold'], ['white', 'darkblue'] ]
-let s:p.insert.right = [ [ 'darkestcyan', 'mediumcyan' ], [ 'mediumcyan', 'darkblue' ], [ 'mediumcyan', 'darkestblue' ] ]
-let s:p.replace.left = [ ['white', 'brightred', 'bold'], ['white', 'gray4'] ]
-let s:p.visual.left = [ ['darkred', 'brightorange', 'bold'], ['white', 'gray4'] ]
-let s:p.normal.middle = [ [ 'gray7', 'gray2' ] ]
-let s:p.insert.middle = [ [ 'mediumcyan', 'darkestblue' ] ]
-let s:p.replace.middle = s:p.normal.middle
-let s:p.replace.right = s:p.normal.right
-let s:p.tabline.left = [ [ 'gray9', 'gray2' ] ]
-let s:p.tabline.tabsel = [ [ 'darkestgreen', 'brightgreen' ] ]
-let s:p.tabline.middle = [ [ 'gray9', 'gray4' ] ]
-let s:p.tabline.right = [ [ 'gray9', 'gray2' ] ]
-let s:p.normal.error = [ [ 'gray9', 'brightestred' ] ]
-let s:p.normal.warning = [ [ 'gray1', 'yellow' ] ]
-let g:lightline#colorscheme#powerline#palette = lightline#colorscheme#fill(s:p)
-let g:lightline.component_expand = {
-            \ 'tabs': 'lightline#tabs' }
-let g:lightline.component_type = {
-            \ 'tabs': 'tabsel' }
+autocmd User ALELint call lightline#update()
 
 let g:fzf_commands_expect = 'enter'
 if executable('rg')
@@ -232,3 +234,6 @@ nnoremap <Space>fr :Rg<CR>
 
 nnoremap <Space>fn :NERDTreeFind<CR>
 nnoremap <Space>ft :NERDTreeToggle<CR>
+
+" ale
+let g:ale_sign_column_always = 1
