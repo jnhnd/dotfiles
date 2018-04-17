@@ -179,18 +179,19 @@ endfunction
 let g:lightline = {
             \ 'colorscheme': 'hydrangea',
             \ 'component': {
-            \   'readonly': '%{&readonly?"\uf23e":""}',
+            \   'readonly': '%{&readonly?"":""}',
+            \   'bubo': "",
             \ },
             \ 'active': {
-            \   'left': [['mode', 'paste'], ['gitbranch', 'readonly', 'filename', 'modified']],
-            \   'right': [['lineinfo', 'percent'], ['fileformat', 'fileencoding', 'filetype'], ['linter_errors', 'linter_warnings', 'linter_ok']]
+            \   'left': [['mode', 'paste'], ['gitbranch', 'readonly', 'filename', 'modified'], ['bubo']],
+            \   'right': [['percent', 'lineinfo'], ['fileformat', 'fileencoding', 'filetype'], ['linter_errors', 'linter_warnings', 'linter_ok']]
             \ },
             \ 'component_function': {
             \   'filename': 'LightLineFilename',
             \   'gitbranch': 'GitBranch'
             \ },
-            \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2 " },
-            \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3 " }
+            \ 'separator': { 'left': "", 'right': " " },
+            \ 'subseparator': { 'left': "", 'right': " " }
             \ }
 let g:lightline.tabline = {
             \ 'left': [ [ 'tabs' ] ],
@@ -214,28 +215,28 @@ let g:lightline.component_type = {
 
 function! GitBranch() abort
   let l:branch = fugitive#head()
-  return l:branch == '' ? '' : printf("\ue702 %s", branch)
+  return l:branch == '' ? '' : printf(" %s", branch)
 endfunction
 
 function! LightlineLinterErrors() abort
   let l:counts = ale#statusline#Count(bufnr(''))
   let l:all_errors = l:counts.error + l:counts.style_error
   let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf("%d \uf467", all_errors)
+  return l:counts.total == 0 ? '' : printf("%d ", all_errors)
 endfunction
 
 function! LightlineLinterWarnings() abort
   let l:counts = ale#statusline#Count(bufnr(''))
   let l:all_errors = l:counts.error + l:counts.style_error
   let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf("%d \uf421", all_non_errors)
+  return l:counts.total == 0 ? '' : printf("%d ", all_non_errors)
 endfunction
 
 function! LightlineLinterOK() abort
   let l:counts = ale#statusline#Count(bufnr(''))
   let l:all_errors = l:counts.error + l:counts.style_error
   let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? "\uf4a1" : ''
+  return l:counts.total == 0 ? "" : ''
 
 endfunction
 
@@ -278,12 +279,6 @@ endif
 
 " completion
 let g:cm_refresh_length=2
-
-" " ncm & neosnippet
-" imap <c-j>     <Plug>(neosnippet_expand_or_jump)
-" vmap <c-j>     <Plug>(neosnippet_expand_or_jump)
-" inoremap <silent> <c-.> <c-r>=cm#sources#neosnippet#trigger_or_popup("\<Plug>(neosnippet_expand_or_jump)")<cr>
-" vmap <c-u>     <Plug>(neosnippet_expand_target)
 
 " expand parameters
 let g:cm_completed_snippet_enable = 1
