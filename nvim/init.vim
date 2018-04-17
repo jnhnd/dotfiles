@@ -3,7 +3,6 @@
 "================================================================
 
 " エンコーディングを設定
-"set encoding=utf-8
 set fenc=utf-8
 scriptencoding utf-8
 
@@ -65,6 +64,8 @@ set backspace=indent,eol,start
 set clipboard+=unnamed,unnamedplus
 " 畳み込み禁止
 set nofoldenable
+" スクロールに行数の余裕をもたせる
+set scrolloff=7
 
 
 "================================================================
@@ -75,20 +76,11 @@ set nofoldenable
 autocmd QuickFixCmdPost *grep* cwindow
 
 " ディレクトリ自動変更
-autocmd BufEnter * execute 'lcd ' fnameescape(expand('%:p:h'))
+" autocmd BufEnter * execute 'lcd ' fnameescape(expand('%:p:h'))
+" autocmd BufEnter * if expand('%:p') !~ '://' | execute 'lcd ' fnameescape(expand('%:p:h')) | endif
 
 " ペースト時の自動インデントと自動コメントアウトの無効化
 autocmd FileType * setlocal formatoptions-=ro
-
-" 背景無効化
-au VimEnter,ColorScheme * highlight Normal ctermbg=NONE
-au VimEnter,ColorScheme * highlight NonText ctermbg=NONE
-au VimEnter,ColorScheme * highlight LineNr ctermbg=NONE
-au VimEnter,ColorScheme * highlight SpecialKey ctermbg=NONE
-au VimEnter,ColorScheme * highlight ErrorMsg ctermbg=NONE
-au VimEnter,ColorScheme * highlight HtmlTag ctermbg=NONE
-au VimEnter,ColorScheme * highlight HtmlEndTag ctermbg=NONE
-au VimEnter,ColorScheme * highlight SpecialComment ctermbg=NONE
 
 
 "================================================================
@@ -132,7 +124,9 @@ cnoremap <c-n> <down>
 
 " 挿入モードでのキーマッピング
 inoremap jj <Esc>
-
+inoremap ; :
+inoremap : ;
+inoremap <c-j> <Esc>o
 
 " ===============================================================
 " Plugin
@@ -140,55 +134,112 @@ inoremap jj <Esc>
 
 call plug#begin('~/.local/share/nvim/plugged')
 
+Plug 'vim-jp/vimdoc-ja'
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
-Plug 'yuttie/hydrangea-vim'
+Plug 'honjet/hydrangea-vim'
 Plug 'itchyny/lightline.vim'
+Plug 'ryanoasis/vim-devicons'
 Plug 'scrooloose/nerdtree'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'tomtom/tcomment_vim'
 Plug 'junegunn/vim-easy-align'
+Plug 'tpope/vim-fugitive'
+Plug 'kana/vim-smartinput'
+Plug 'airblade/vim-rooter'
+Plug 'tpope/vim-surround'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+
+Plug 'cespare/vim-toml'
+Plug 'rust-lang/rust.vim'
+Plug 'neovimhaskell/haskell-vim'
+
+Plug 'timonv/vim-cargo'
+
+Plug 'w0rp/ale'
+if has('nvim')
+    Plug 'autozimu/LanguageClient-neovim', {
+                \ 'branch': 'next',
+                \ 'do': 'bash install.sh',
+                \ }
+    Plug 'roxma/nvim-completion-manager'
+    Plug 'dzhou121/gonvim-fuzzy'
+    Plug 'equalsraf/neovim-gui-shim'
+endif
 
 call plug#end()
 
 colorscheme hydrangea
 
+function! LightLineFilename()
+  return expand('%')
+endfunction
+
 let g:lightline = {
-        \ 'colorscheme': 'hydrangea',
-        \ 'component': {
-        \   'readonly': '%{&readonly?"\u2b64":""}',
-        \ },
-        \ 'separator': { 'left': "\u2b80", 'right': "\u2b82" },
-        \ 'subseparator': { 'left': "\u2b81", 'right': "\u2b83" }
-        \ }
+            \ 'colorscheme': 'hydrangea',
+            \ 'component': {
+            \   'readonly': '%{&readonly?"\uf23e":""}',
+            \ },
+            \ 'active': {
+            \   'left': [['mode', 'paste'], ['gitbranch', 'readonly', 'filename', 'modified']],
+            \   'right': [['lineinfo', 'percent'], ['fileformat', 'fileencoding', 'filetype'], ['linter_errors', 'linter_warnings', 'linter_ok']]
+            \ },
+            \ 'component_function': {
+            \   'filename': 'LightLineFilename',
+            \   'gitbranch': 'GitBranch'
+            \ },
+            \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2 " },
+            \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3 " }
+            \ }
 let g:lightline.tabline = {
-        \ 'left': [ [ 'tabs' ] ],
-        \ 'right': [ [ 'close' ] ] }
+            \ 'left': [ [ 'tabs' ] ],
+            \ 'right': [ [ 'close' ] ] }
+
 " lightline 色の設定
 let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
-let s:p.normal.left = [ ['darkestgreen', 'brightgreen', 'bold'], ['white', 'gray4'] ]
-let s:p.normal.right = [ ['gray5', 'gray10'], ['gray9', 'gray4'], ['gray8', 'gray2'] ]
-let s:p.inactive.right = [ ['gray1', 'gray5'], ['gray4', 'gray1'], ['gray4', 'gray0'] ]
-let s:p.inactive.left = s:p.inactive.right[1:]
-let s:p.insert.left = [ ['darkestcyan', 'white', 'bold'], ['white', 'darkblue'] ]
-let s:p.insert.right = [ [ 'darkestcyan', 'mediumcyan' ], [ 'mediumcyan', 'darkblue' ], [ 'mediumcyan', 'darkestblue' ] ]
-let s:p.replace.left = [ ['white', 'brightred', 'bold'], ['white', 'gray4'] ]
-let s:p.visual.left = [ ['darkred', 'brightorange', 'bold'], ['white', 'gray4'] ]
-let s:p.normal.middle = [ [ 'gray7', 'gray2' ] ]
-let s:p.insert.middle = [ [ 'mediumcyan', 'darkestblue' ] ]
-let s:p.replace.middle = s:p.normal.middle
-let s:p.replace.right = s:p.normal.right
-let s:p.tabline.left = [ [ 'gray9', 'gray2' ] ]
-let s:p.tabline.tabsel = [ [ 'darkestgreen', 'brightgreen' ] ]
-let s:p.tabline.middle = [ [ 'gray9', 'gray4' ] ]
-let s:p.tabline.right = [ [ 'gray9', 'gray2' ] ]
-let s:p.normal.error = [ [ 'gray9', 'brightestred' ] ]
-let s:p.normal.warning = [ [ 'gray1', 'yellow' ] ]
 let g:lightline#colorscheme#powerline#palette = lightline#colorscheme#fill(s:p)
 let g:lightline.component_expand = {
-            \ 'tabs': 'lightline#tabs' }
+            \ 'tabs': 'lightline#tabs',
+            \ 'linter_warnings': 'LightlineLinterWarnings',
+            \ 'linter_errors': 'LightlineLinterErrors',
+            \ 'linter_ok': 'LightlineLinterOK'
+            \ }
 let g:lightline.component_type = {
-            \ 'tabs': 'tabsel' }
+            \ 'tabs': 'tabsel',
+            \ 'readonly': 'error',
+            \ 'linter_warnings': 'warning',
+            \ 'linter_errors': 'error'
+            \ }
+
+function! GitBranch() abort
+  let l:branch = fugitive#head()
+  return l:branch == '' ? '' : printf("\ue702 %s", branch)
+endfunction
+
+function! LightlineLinterErrors() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '' : printf("%d \uf467", all_errors)
+endfunction
+
+function! LightlineLinterWarnings() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '' : printf("%d \uf421", all_non_errors)
+endfunction
+
+function! LightlineLinterOK() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? "\uf4a1" : ''
+
+endfunction
+
+autocmd User ALELint call lightline#update()
 
 let g:fzf_commands_expect = 'enter'
 if executable('rg')
@@ -207,3 +258,50 @@ nnoremap <Space>fr :Rg<CR>
 
 nnoremap <Space>fn :NERDTreeFind<CR>
 nnoremap <Space>ft :NERDTreeToggle<CR>
+
+if has('nvim')
+    " autocmd BufReadPost *.rs setlocal filetype=rust
+    let g:LanguageClient_serverCommands = {
+                \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+                \ 'haskell': ['hie', '--lsp'],
+                \ }
+    let g:LanguageClient_autoStart = 1
+
+    nnoremap <silent> K :call LanguageClient_textDocument_hover()<CR>
+    nnoremap <silent> gd :call LanguageClient_textDocument_definition()<CR>
+    nnoremap <silent> <Space>jr :call LanguageClient_textDocument_rename()<CR>
+    nnoremap <silent> <Space>js :call LanguageClient_textDocument_documentSymbol()<CR>
+    nnoremap <silent> <Space>jl :call LanguageClient_textDocument_references()<CR>
+    nnoremap <silent> <Space>jf :call LanguageClient_textDocument_formatting()<CR>
+    nnoremap <silent> <Space>jF :call LanguageClient_textDocument_rangeFormatting()<CR>
+endif
+
+" completion
+let g:cm_refresh_length=2
+
+" " ncm & neosnippet
+" imap <c-j>     <Plug>(neosnippet_expand_or_jump)
+" vmap <c-j>     <Plug>(neosnippet_expand_or_jump)
+" inoremap <silent> <c-.> <c-r>=cm#sources#neosnippet#trigger_or_popup("\<Plug>(neosnippet_expand_or_jump)")<cr>
+" vmap <c-u>     <Plug>(neosnippet_expand_target)
+
+" expand parameters
+let g:cm_completed_snippet_enable = 1
+
+" let g:neosnippet#enable_completed_snippet=1
+let g:UltiSnipsExpandTrigger="<c-k>"
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" vim-devicons
+let g:webdevicons_conceal_nerdtree_brackets = 1
+let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
+" dir-icons
+let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+let g:DevIconsEnableFoldersOpenClose = 1
+
+" ale
+let g:ale_sign_column_always = 1
+
+" rustfmt
+let g:rustfmt_autosave = 1
