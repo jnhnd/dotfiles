@@ -20,7 +20,7 @@ set title
 " 行番号を表示
 set number
 " 現在の行を強調表示
-set cursorline
+" set cursorline
 " 行末の1文字先までカーソルを移動できるように
 set virtualedit=onemore
 " インデントはスマートインデント
@@ -65,31 +65,19 @@ set backspace=indent,eol,start
 set clipboard+=unnamed,unnamedplus
 " 畳み込み禁止
 set nofoldenable
+" スクロールに行数の余裕をもたせる
+set scrolloff=7
 
 
 "================================================================
 " 自動コマンド
 "================================================================
 
-" Quickfix の自動化
-autocmd QuickFixCmdPost *grep* cwindow
-
 " ディレクトリ自動変更
 autocmd BufEnter * execute 'lcd ' fnameescape(expand('%:p:h'))
 
 " ペースト時の自動インデントと自動コメントアウトの無効化
 autocmd FileType * setlocal formatoptions-=ro
-
-" 背景無効化
-au VimEnter,ColorScheme * highlight Normal ctermbg=NONE
-au VimEnter,ColorScheme * highlight NonText ctermbg=NONE
-au VimEnter,ColorScheme * highlight LineNr ctermbg=NONE
-au VimEnter,ColorScheme * highlight SpecialKey ctermbg=NONE
-au VimEnter,ColorScheme * highlight ErrorMsg ctermbg=NONE
-au VimEnter,ColorScheme * highlight HtmlTag ctermbg=NONE
-au VimEnter,ColorScheme * highlight HtmlEndTag ctermbg=NONE
-au VimEnter,ColorScheme * highlight SpecialComment ctermbg=NONE
-
 
 "================================================================
 " カーソル形状
@@ -132,7 +120,7 @@ cnoremap <c-n> <down>
 
 " 挿入モードでのキーマッピング
 inoremap jj <Esc>
-
+inoremap <c-j> <Esc>o
 
 " ===============================================================
 " Plugin
@@ -207,3 +195,5 @@ nnoremap <Space>fr :Rg<CR>
 
 nnoremap <Space>fn :NERDTreeFind<CR>
 nnoremap <Space>ft :NERDTreeToggle<CR>
+
+let g:rooter_change_directory_for_non_project_files = 'current'

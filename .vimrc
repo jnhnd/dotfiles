@@ -1,41 +1,3 @@
-" vim-plug Installation
-"
-" Download plug.vim and put it in the "autoload" directory.
-" Vim
-" Unix
-"
-" curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-"     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-"
-" You can automate the process by putting the command in your Vim configuration file as suggested here.
-" Windows (PowerShell)
-"
-" md ~\vimfiles\autoload
-" $uri = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-" (New-Object Net.WebClient).DownloadFile(
-"   $uri,
-"   $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath(
-"     "~\vimfiles\autoload\plug.vim"
-"   )
-" )
-"
-" Neovim
-" Unix
-"
-" curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
-"     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-"
-" Windows (PowerShell)
-"
-" md ~\AppData\Local\nvim\autoload
-" $uri = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-" (New-Object Net.WebClient).DownloadFile(
-"   $uri,
-"   $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath(
-"     "~\AppData\Local\nvim\autoload\plug.vim"
-"   )
-" )
-
 "================================================================
 " 基本設定
 "================================================================
@@ -138,7 +100,7 @@ set scrolloff=7
 
 " ディレクトリ自動変更
 " autocmd BufEnter * execute 'lcd ' fnameescape(expand('%:p:h'))
-" autocmd BufEnter * if expand('%:p') !~ '://' | execute 'lcd ' fnameescape(expand('%:p:h')) | endif
+autocmd BufEnter * if expand('%:p') !~ '://' | execute 'lcd ' fnameescape(expand('%:p:h')) | endif
 
 " ペースト時の自動インデントと自動コメントアウトの無効化
 autocmd FileType * setlocal formatoptions-=ro
@@ -184,7 +146,7 @@ cnoremap <c-n> <down>
 
 " 挿入モードでのキーマッピング
 inoremap jj <Esc>
-
+inoremap <c-j> <Esc>o
 
 " ===============================================================
 " Plugin
@@ -200,22 +162,15 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'scrooloose/nerdtree'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-Plug 'tomtom/tcomment_vim'
 Plug 'junegunn/vim-easy-align'
 Plug 'tpope/vim-fugitive'
 Plug 'kana/vim-smartinput'
 Plug 'airblade/vim-rooter'
 Plug 'tpope/vim-surround'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
-
-Plug 'w0rp/ale'
 
 call plug#end()
 
 colorscheme hydrangea
-
-autocmd User ALELint call lightline#update()
 
 let g:fzf_commands_expect = 'enter'
 if executable('rg')
@@ -235,5 +190,5 @@ nnoremap <Space>fr :Rg<CR>
 nnoremap <Space>fn :NERDTreeFind<CR>
 nnoremap <Space>ft :NERDTreeToggle<CR>
 
-" ale
-let g:ale_sign_column_always = 1
+let g:rooter_change_directory_for_non_project_files = 'current'
+
