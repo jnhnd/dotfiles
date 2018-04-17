@@ -178,6 +178,23 @@ export PATH=/home/jnhnd/.local/bin/:$PATH
 export FZF_DEFAULT_COMMAND='git ls-tree -r --name-only HEAD || rg --files || fd .'
 export SKIM_DEFAULT_COMMAND='git ls-tree -r --name-only HEAD || rg --files || fd .'
 
+_fzf_complete_git() {
+    ARGS="$@"
+    local branches
+    branches=$(git branch -vv --all)
+    if [[ $ARGS == 'git co'* ]]; then
+        _fzf_complete "--reverse --multi" "$@" < <(
+            echo $branches
+        )
+    else
+        eval "zle ${fzf_default_completion:-expand-or-complete}"
+    fi
+}
+
+_fzf_complete_git_post() {
+    awk '{print $1}'
+}
+
 ########################################
 alias open='xdg-open'
 
