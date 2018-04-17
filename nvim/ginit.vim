@@ -18,8 +18,7 @@ function! s:toggle_transparence()
 endfunction
 nnoremap <silent> <Space>tt :<C-u>call <SID>toggle_transparence()<CR>
 
-set guifont=Ricty\ for\ Powerline:h15
-" set guifontwide=Ricty:h14
+set guifont=Cica:h15
 
 " メニューバー非表示
 set guioptions-=m
@@ -35,3 +34,7 @@ set cmdheight=1
 set cursorline
 
 set visualbell t_vb=
+
+" 選択にコマンドラインを使用
+set guioptions+=c
+

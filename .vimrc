@@ -263,3 +263,6 @@ if has('mac')
     let &t_SI = "\<Esc>]50;CursorShape=1\x7"
     let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 endif
+
+" vim-rooter
+let g:rooter_change_directory_for_non_project_files = 'current'
