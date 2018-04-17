@@ -46,7 +46,7 @@ set title
 " 行番号を表示
 set number
 " 現在の行を強調表示
-" set cursorline
+set cursorline
 " 行末の1文字先までカーソルを移動できるように
 set virtualedit=onemore
 " インデントはスマートインデント
@@ -179,6 +179,7 @@ Plug 'tpope/vim-surround'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
+Plug 'tpope/vim-fugitive'
 Plug 'cespare/vim-toml'
 Plug 'rust-lang/rust.vim'
 Plug 'timonv/vim-cargo'
@@ -195,19 +196,6 @@ if has('nvim')
     Plug 'roxma/nvim-completion-manager'
     Plug 'dzhou121/gonvim-fuzzy'
     Plug 'equalsraf/neovim-gui-shim'
-endif
-
-Plug 'tpope/vim-fugitive'
-Plug 'w0rp/ale'
-if has('nvim')
-    " Plug 'autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}
-    Plug 'autozimu/LanguageClient-neovim', {
-                \ 'branch': 'next',
-                \ 'do': 'bash install.sh',
-                \ }
-    Plug 'roxma/nvim-completion-manager'
-    Plug 'SirVer/ultisnips'
-    Plug 'honza/vim-snippets'
 endif
 
 " markdown
@@ -240,7 +228,7 @@ endfunction
 let g:lightline = {
             \ 'colorscheme': 'hydrangea',
             \ 'component': {
-            \   'readonly': '%{&readonly?"\uf23e":""}',
+            \   'readonly': '%{&readonly?"\uf456":""}',
             \ },
             \ 'active': {
             \   'left': [['mode', 'paste'], ['gitbranch', 'readonly', 'filename', 'modified']],
@@ -275,7 +263,7 @@ let g:lightline.component_type = {
 
 function! GitBranch() abort
   let l:branch = fugitive#head()
-  return l:branch == '' ? '' : printf("\ue702 %s", branch)
+  return l:branch == '' ? '' : printf("\uf418 %s", branch)
 endfunction
 
 function! LightlineLinterErrors() abort
