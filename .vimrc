@@ -232,3 +232,6 @@ nnoremap <Space>fr :Rg<CR>
 
 nnoremap <Space>fn :NERDTreeFind<CR>
 nnoremap <Space>ft :NERDTreeToggle<CR>
+
+" vim-rooter
+let g:rooter_change_directory_for_non_project_files = 'current'

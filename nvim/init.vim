@@ -305,3 +305,6 @@ let g:ale_sign_column_always = 1
 
 " rustfmt
 let g:rustfmt_autosave = 1
+
+" vim-rooter
+let g:rooter_change_directory_for_non_project_files = 'current'
