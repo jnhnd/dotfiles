@@ -129,51 +129,89 @@ Plug 'vim-jp/vimdoc-ja'
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 Plug 'honjet/hydrangea-vim'
 Plug 'itchyny/lightline.vim'
+Plug 'ryanoasis/vim-devicons'
 Plug 'scrooloose/nerdtree'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/vim-easy-align'
+Plug 'tpope/vim-fugitive'
+Plug 'kana/vim-smartinput'
+Plug 'airblade/vim-rooter'
+Plug 'tpope/vim-surround'
+Plug 'w0rp/ale'
 
 call plug#end()
 
 colorscheme hydrangea
 
+function! LightLineFilename()
+  return expand('%')
+endfunction
+
 let g:lightline = {
-        \ 'colorscheme': 'hydrangea',
-        \ 'component': {
-        \   'readonly': '%{&readonly?"\u2b64":""}',
-        \ },
-        \ 'separator': { 'left': "\u2b80", 'right': "\u2b82" },
-        \ 'subseparator': { 'left': "\u2b81", 'right': "\u2b83" }
-        \ }
+            \ 'colorscheme': 'hydrangea',
+            \ 'component': {
+            \   'readonly': '%{&readonly?"":""}',
+            \   'bubo': "",
+            \ },
+            \ 'active': {
+            \   'left': [['mode', 'paste'], ['gitbranch', 'readonly', 'filename', 'modified'], ['bubo']],
+            \   'right': [['percent', 'lineinfo'], ['fileformat', 'fileencoding', 'filetype'], ['linter_errors', 'linter_warnings', 'linter_ok']]
+            \ },
+            \ 'component_function': {
+            \   'filename': 'LightLineFilename',
+            \   'gitbranch': 'GitBranch'
+            \ },
+            \ 'separator': { 'left': "", 'right': " " },
+            \ 'subseparator': { 'left': "", 'right': " " }
+            \ }
 let g:lightline.tabline = {
-        \ 'left': [ [ 'tabs' ] ],
-        \ 'right': [ [ 'close' ] ] }
+            \ 'left': [ [ 'tabs' ] ],
+            \ 'right': [ [ 'close' ] ] }
+
 " lightline 色の設定
 let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
-let s:p.normal.left = [ ['darkestgreen', 'brightgreen', 'bold'], ['white', 'gray4'] ]
-let s:p.normal.right = [ ['gray5', 'gray10'], ['gray9', 'gray4'], ['gray8', 'gray2'] ]
-let s:p.inactive.right = [ ['gray1', 'gray5'], ['gray4', 'gray1'], ['gray4', 'gray0'] ]
-let s:p.inactive.left = s:p.inactive.right[1:]
-let s:p.insert.left = [ ['darkestcyan', 'white', 'bold'], ['white', 'darkblue'] ]
-let s:p.insert.right = [ [ 'darkestcyan', 'mediumcyan' ], [ 'mediumcyan', 'darkblue' ], [ 'mediumcyan', 'darkestblue' ] ]
-let s:p.replace.left = [ ['white', 'brightred', 'bold'], ['white', 'gray4'] ]
-let s:p.visual.left = [ ['darkred', 'brightorange', 'bold'], ['white', 'gray4'] ]
-let s:p.normal.middle = [ [ 'gray7', 'gray2' ] ]
-let s:p.insert.middle = [ [ 'mediumcyan', 'darkestblue' ] ]
-let s:p.replace.middle = s:p.normal.middle
-let s:p.replace.right = s:p.normal.right
-let s:p.tabline.left = [ [ 'gray9', 'gray2' ] ]
-let s:p.tabline.tabsel = [ [ 'darkestgreen', 'brightgreen' ] ]
-let s:p.tabline.middle = [ [ 'gray9', 'gray4' ] ]
-let s:p.tabline.right = [ [ 'gray9', 'gray2' ] ]
-let s:p.normal.error = [ [ 'gray9', 'brightestred' ] ]
-let s:p.normal.warning = [ [ 'gray1', 'yellow' ] ]
 let g:lightline#colorscheme#powerline#palette = lightline#colorscheme#fill(s:p)
 let g:lightline.component_expand = {
-            \ 'tabs': 'lightline#tabs' }
+            \ 'tabs': 'lightline#tabs',
+            \ 'linter_warnings': 'LightlineLinterWarnings',
+            \ 'linter_errors': 'LightlineLinterErrors',
+            \ 'linter_ok': 'LightlineLinterOK'
+            \ }
 let g:lightline.component_type = {
-            \ 'tabs': 'tabsel' }
+            \ 'tabs': 'tabsel',
+            \ 'readonly': 'error',
+            \ 'linter_warnings': 'warning',
+            \ 'linter_errors': 'error'
+            \ }
+
+function! GitBranch() abort
+  let l:branch = fugitive#head()
+  return l:branch == '' ? '' : printf(" %s", branch)
+endfunction
+
+function! LightlineLinterErrors() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '' : printf("%d ", all_errors)
+endfunction
+
+function! LightlineLinterWarnings() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '' : printf("%d ", all_non_errors)
+endfunction
+
+function! LightlineLinterOK() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? "" : ''
+endfunction
+
+autocmd User ALELint call lightline#update()
 
 let g:fzf_commands_expect = 'enter'
 if executable('rg')
@@ -183,6 +221,7 @@ if executable('rg')
         \   'rg --line-number --no-heading '.shellescape(<q-args>), 1,
         \   fzf#vim#with_preview({'options': '--exact --reverse'}, 'right:50%:wrap'))
 endif
+
 nnoremap <Space>p :Commands<CR>
 nnoremap <Space>ff :Files ~/<CR>
 nnoremap <Space>fg :GFiles<CR>
