@@ -3,7 +3,7 @@
 "================================================================
 
 " エンコーディングを設定
-"set encoding=utf-8
+set encoding=utf-8
 set fenc=utf-8
 scriptencoding utf-8
 
@@ -73,9 +73,6 @@ set scrolloff=7
 " 自動コマンド
 "================================================================
 
-" ディレクトリ自動変更
-autocmd BufEnter * execute 'lcd ' fnameescape(expand('%:p:h'))
-
 " ペースト時の自動インデントと自動コメントアウトの無効化
 autocmd FileType * setlocal formatoptions-=ro
 
@@ -128,13 +125,13 @@ inoremap <c-j> <Esc>o
 
 call plug#begin('~/.local/share/nvim/plugged')
 
+Plug 'vim-jp/vimdoc-ja'
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
-Plug 'yuttie/hydrangea-vim'
+Plug 'honjet/hydrangea-vim'
 Plug 'itchyny/lightline.vim'
 Plug 'scrooloose/nerdtree'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-Plug 'tomtom/tcomment_vim'
 Plug 'junegunn/vim-easy-align'
 
 call plug#end()

@@ -3,6 +3,7 @@
 "================================================================
 
 " エンコーディングを設定
+set encoding=utf-8
 set fenc=utf-8
 scriptencoding utf-8
 
@@ -45,7 +46,7 @@ set title
 " 行番号を表示
 set number
 " 現在の行を強調表示
-set cursorline
+" set cursorline
 " 行末の1文字先までカーソルを移動できるように
 set virtualedit=onemore
 " インデントはスマートインデント
@@ -97,10 +98,6 @@ set scrolloff=7
 "================================================================
 " 自動コマンド
 "================================================================
-
-" ディレクトリ自動変更
-" autocmd BufEnter * execute 'lcd ' fnameescape(expand('%:p:h'))
-autocmd BufEnter * if expand('%:p') !~ '://' | execute 'lcd ' fnameescape(expand('%:p:h')) | endif
 
 " ペースト時の自動インデントと自動コメントアウトの無効化
 autocmd FileType * setlocal formatoptions-=ro
@@ -172,6 +169,43 @@ call plug#end()
 
 colorscheme hydrangea
 
+let g:lightline = {
+        \ 'colorscheme': 'hydrangea',
+        \ 'component': {
+        \   'readonly': '%{&readonly?"\u2b64":""}',
+        \ },
+        \ 'separator': { 'left': "\u2b80", 'right': "\u2b82" },
+        \ 'subseparator': { 'left': "\u2b81", 'right': "\u2b83" }
+        \ }
+let g:lightline.tabline = {
+        \ 'left': [ [ 'tabs' ] ],
+        \ 'right': [ [ 'close' ] ] }
+" lightline 色の設定
+let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
+let s:p.normal.left = [ ['darkestgreen', 'brightgreen', 'bold'], ['white', 'gray4'] ]
+let s:p.normal.right = [ ['gray5', 'gray10'], ['gray9', 'gray4'], ['gray8', 'gray2'] ]
+let s:p.inactive.right = [ ['gray1', 'gray5'], ['gray4', 'gray1'], ['gray4', 'gray0'] ]
+let s:p.inactive.left = s:p.inactive.right[1:]
+let s:p.insert.left = [ ['darkestcyan', 'white', 'bold'], ['white', 'darkblue'] ]
+let s:p.insert.right = [ [ 'darkestcyan', 'mediumcyan' ], [ 'mediumcyan', 'darkblue' ], [ 'mediumcyan', 'darkestblue' ] ]
+let s:p.replace.left = [ ['white', 'brightred', 'bold'], ['white', 'gray4'] ]
+let s:p.visual.left = [ ['darkred', 'brightorange', 'bold'], ['white', 'gray4'] ]
+let s:p.normal.middle = [ [ 'gray7', 'gray2' ] ]
+let s:p.insert.middle = [ [ 'mediumcyan', 'darkestblue' ] ]
+let s:p.replace.middle = s:p.normal.middle
+let s:p.replace.right = s:p.normal.right
+let s:p.tabline.left = [ [ 'gray9', 'gray2' ] ]
+let s:p.tabline.tabsel = [ [ 'darkestgreen', 'brightgreen' ] ]
+let s:p.tabline.middle = [ [ 'gray9', 'gray4' ] ]
+let s:p.tabline.right = [ [ 'gray9', 'gray2' ] ]
+let s:p.normal.error = [ [ 'gray9', 'brightestred' ] ]
+let s:p.normal.warning = [ [ 'gray1', 'yellow' ] ]
+let g:lightline#colorscheme#powerline#palette = lightline#colorscheme#fill(s:p)
+let g:lightline.component_expand = {
+            \ 'tabs': 'lightline#tabs' }
+let g:lightline.component_type = {
+            \ 'tabs': 'tabsel' }
+
 let g:fzf_commands_expect = 'enter'
 if executable('rg')
     set grepprg=rg\ --vimgrep
@@ -191,4 +225,3 @@ nnoremap <Space>fn :NERDTreeFind<CR>
 nnoremap <Space>ft :NERDTreeToggle<CR>
 
 let g:rooter_change_directory_for_non_project_files = 'current'
-
