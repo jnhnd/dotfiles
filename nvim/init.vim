@@ -8,6 +8,7 @@ set fenc=utf-8
 scriptencoding utf-8
 
 " 自動生成ファイルの出力先指定
+" neovimじゃないとデフォルトで変なところに出力されるのでまとめる
 if !has('nvim')
     let back_path = expand('~/.vim/backup')
     let swap_path = expand('~/.vim/swap')
@@ -59,6 +60,7 @@ set showmatch
 set laststatus=2
 " コマンドラインの補完
 set wildmode=list,full
+set wildignorecase
 " コマンドラインの高さ
 set cmdheight=1
 " タブページ表示
@@ -70,7 +72,7 @@ set expandtab
 " 行頭以外のTab文字の表示幅（スペースいくつ分）
 set tabstop=4
 " 行頭でのTab文字の表示幅
-set shiftwidth=4
+set shiftwidth=2
 " 検索文字列が小文字の場合は大文字小文字を区別なく検索する
 set ignorecase
 " 検索文字列に大文字が含まれている場合は区別して検索する
@@ -88,7 +90,7 @@ set whichwrap=b,s,h,l,[,],<,>
 " BackSpace を空白、行頭、行末でも可能に
 set backspace=indent,eol,start
 " クリップボードへのコピー
-set clipboard=unnamed
+set clipboard+=unnamedplus
 " 畳み込み禁止
 set nofoldenable
 " スクロールに行数の余裕をもたせる
@@ -101,9 +103,6 @@ set scrolloff=7
 
 " Quickfix の自動化
 autocmd QuickFixCmdPost *grep* cwindow
-
-" ディレクトリ自動変更
-" autocmd BufEnter * if expand('%:p') !~ '://' | execute 'lcd ' fnameescape(expand('%:p:h')) | endif
 
 " ペースト時の自動インデントと自動コメントアウトの無効化
 autocmd FileType * setlocal formatoptions-=ro
@@ -119,141 +118,212 @@ set guicursor=n-v-c:block-Cursor/lCursor-blinkon0,i-ci:ver25-Cursor/lCursor,r-cr
 " キーマップ
 "================================================================
 
+" ---------------------------------------------------------------
 " ノーマルモード & ビジュアルモードでのキーマッピング
-noremap <m-q> :qa<CR>
-noremap <m-w> :wa<CR>
-noremap <c-q> :bd<CR>
+
+" コマンド入力のしやすさのため、コロンとセミコロン入れ替え
 noremap ; :
 noremap : ;
-noremap <m-c> "+y
-noremap <m-v> "+gP
-noremap Q <Nop>
 
+" Exモード無効
+noremap Q <Nop>
+noremap gQ <Nop>
+
+" ---------------------------------------------------------------
 " コマンドモード & 挿入モードでのキーマッピング
+
+" カーソル移動系
 noremap! <c-f> <right>
 noremap! <c-b> <left>
 noremap! <c-a> <home>
 noremap! <c-e> <end>
 noremap! <c-d> <del>
 
+" ---------------------------------------------------------------
 " ノーマルモードでのキーマッピング
+
+" 行末までコピー
 nnoremap Y y$
+" インクリメント＆デクリメント
 nnoremap + <c-a>
 nnoremap - <c-x>
+" 改行
 nnoremap <Enter> o<Esc>
+" ハイライト解除
 nnoremap <Esc><Esc> :noh<CR>
+" 上下と入れ替えてインデント調整
+nnoremap sj ddp==
+nnoremap sk ddkP==
 
+nnoremap ≠ <c-w>+
+nnoremap – <c-w>-
+nnoremap ≤ <c-w><
+nnoremap ≥ <c-w>>
+
+" ---------------------------------------------------------------
 " コマンドモードでのキーマッピング
 cnoremap <c-p> <up>
 cnoremap <c-n> <down>
 
+" ---------------------------------------------------------------
 " 挿入モードでのキーマッピング
-inoremap jj <Esc>
-inoremap ; :
-inoremap : ;
-inoremap <c-j> <Esc>o
+" inoremap jj <Esc>
+inoremap jk <Esc>
+inoremap kj <Esc>
+
 
 " ===============================================================
-" Plugin
-" for vim-plug
+" Plugins
+" プラグイン管理は "vim-plug" --> https://github.com/junegunn/vim-plug
+"
+" Install for Vim
+"
+" ```
+" curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+"     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+" ```
+"
+" Install for Neovim
+"
+" ```
+" curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+"    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+" ```
+"
+" プラグインを追加したら、このファイルを読み込み直して `:PlugInstall`
+" を実行することでインストールされる
+"
 " ===============================================================
 
 call plug#begin('~/.vim/plugged')
 
-Plug 'vim-jp/vimdoc-ja'
+" Vimで非同期実行できるようにする
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
-Plug 'honjet/hydrangea-vim'
+" 日本語ヘルプ
+Plug 'vim-jp/vimdoc-ja'
+" カラースキーム
+Plug 'gosukiwi/vim-atom-dark'
+" ステータスバーなどの見た目を綺麗にする
 Plug 'itchyny/lightline.vim'
-Plug 'ryanoasis/vim-devicons'
+" サイドバー表示のファイラ
 Plug 'scrooloose/nerdtree'
+" NERDTreeにファイルアイコンをつける
+" Cicaフォントのインストールを推奨 --> https://github.com/miiton/Cica
+Plug 'ryanoasis/vim-devicons'
+" インデント可視化
+Plug 'Yggdroot/indentLine'
+" Normalモード <Ctrl-p> でファイルの選択を開く (fzf使えないとき用)
 Plug 'kien/ctrlp.vim'
+" あいまい検索インターフェース
+" ファイル検索やgrepでよく使う
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-Plug 'lotabout/skim', { 'dir': '~/.skim', 'do': './install' }
-Plug 'lotabout/skim.vim'
+" コメントアウトのトグル <Ctrl--> か <Ctrl-_> で使える
 Plug 'tomtom/tcomment_vim'
+" 記号とかで列を揃える
 Plug 'junegunn/vim-easy-align'
+" 対応するカッコやクォーテーションを自動で入力してくれる
 Plug 'kana/vim-smartinput'
+" カレントディレクトリを自動で変えてくれる
 Plug 'airblade/vim-rooter'
+" テキストを囲うものを編集しやすくする (カッコやタグなど)
 Plug 'tpope/vim-surround'
+" スニペット挿入
 Plug 'SirVer/ultisnips'
+" スニペット リスト
 Plug 'honza/vim-snippets'
-
+" Git操作をVimから。 :Gstatusが便利
 Plug 'tpope/vim-fugitive'
+
+" Linter
+Plug 'w0rp/ale'
+" 補完
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" 言語サーバクライアント
+Plug 'autozimu/LanguageClient-neovim', {
+      \ 'branch': 'next',
+      \ 'do': 'bash install.sh',
+      \ }
+
+" 言語系
+Plug 'plasticboy/vim-markdown'
 Plug 'cespare/vim-toml'
 Plug 'rust-lang/rust.vim'
 Plug 'timonv/vim-cargo'
 Plug 'neovimhaskell/haskell-vim'
+Plug 'pangloss/vim-javascript'
 
-Plug 'timonv/vim-cargo'
-
-Plug 'w0rp/ale'
-if has('nvim')
-    Plug 'autozimu/LanguageClient-neovim', {
-                \ 'branch': 'next',
-                \ 'do': 'bash install.sh',
-                \ }
-    Plug 'roxma/nvim-completion-manager'
-    Plug 'dzhou121/gonvim-fuzzy'
-    Plug 'equalsraf/neovim-gui-shim'
-endif
-
-" markdown
-Plug 'plasticboy/vim-markdown'
-
-" ruby
+" ruby on rails
 Plug 'vim-ruby/vim-ruby'
 Plug 'tpope/vim-rails'
-Plug 'slim-template/vim-slim'
-Plug 'kana/vim-smartinput'
-Plug 'cohama/vim-smartinput-endwise'
-Plug 'slim-template/vim-slim'
 Plug 'tpope/vim-haml'
+Plug 'slim-template/vim-slim'
+Plug 'cohama/vim-smartinput-endwise'
 Plug 'digitaltoad/vim-pug'
-Plug 'mattn/emmet-vim'
-Plug 'tpope/vim-surround'
-Plug 'hail2u/vim-css3-syntax'
-Plug 'pangloss/vim-javascript'
 Plug 'kchmck/vim-coffee-script'
 Plug 'szw/vim-tags'
+Plug 'ruby-formatter/rufo-vim'
+
+" PHP
+Plug 'roxma/LanguageServer-php-neovim', {'do': 'composer install && composer run-script parse-stubs'}
+Plug 'beanworks/vim-phpfmt'
+
+" front end
+Plug 'mattn/emmet-vim'
+Plug 'hail2u/vim-css3-syntax'
+Plug 'elmcast/elm-vim'
+Plug 'leafgarland/typescript-vim'
+Plug 'prettier/vim-prettier', {
+    \ 'do': 'yarn install',
+    \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss'] }
 
 call plug#end()
 
-colorscheme hydrangea
+" vimdoc-ja ヘルプを日本語優先にする
+set helplang=ja,en
 
+" vim-atom-dark カラースキーム設定
+colorscheme atom-dark-256
+
+" lightline カレントディレクトリからの相対パス
 function! LightLineFilename()
   return expand('%')
 endfunction
 
+" lightline ステータスバーの表示設定
 let g:lightline = {
-            \ 'colorscheme': 'hydrangea',
             \ 'component': {
-            \   'readonly': '%{&readonly?"\uf456":""}',
+            \   'readonly': '%{&readonly?"":""}',
+            \   'bubo': "",
             \ },
             \ 'active': {
-            \   'left': [['mode', 'paste'], ['gitbranch', 'readonly', 'filename', 'modified']],
-            \   'right': [['lineinfo', 'percent'], ['fileformat', 'fileencoding', 'filetype'], ['linter_errors', 'linter_warnings', 'linter_ok']]
+            \   'left': [['mode', 'paste'], ['gitbranch', 'readonly', 'filename', 'modified'], ['bubo']],
+            \   'right': [['percent', 'lineinfo'], ['fileformat', 'fileencoding', 'filetype'], ['linter_errors', 'linter_warnings', 'linter_ok']]
             \ },
             \ 'component_function': {
-            \   'filename': 'LightLineFilename',
             \   'gitbranch': 'GitBranch'
             \ },
-            \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2 " },
-            \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3 " }
+            \ 'separator': { 'left': "", 'right': " " },
+            \ 'subseparator': { 'left': "", 'right': " " }
             \ }
+
+" lightline タブバーの表示設定
 let g:lightline.tabline = {
             \ 'left': [ [ 'tabs' ] ],
             \ 'right': [ [ 'close' ] ] }
 
 " lightline 色の設定
 let s:p = {'normal': {}, 'inactive': {}, 'insert': {}, 'replace': {}, 'visual': {}, 'tabline': {}}
-let g:lightline#colorscheme#powerline#palette = lightline#colorscheme#fill(s:p)
+
+" lightline コンポーネントが何を返すか
 let g:lightline.component_expand = {
             \ 'tabs': 'lightline#tabs',
             \ 'linter_warnings': 'LightlineLinterWarnings',
             \ 'linter_errors': 'LightlineLinterErrors',
             \ 'linter_ok': 'LightlineLinterOK'
             \ }
+
+" lightline コンポーネントの表示色
 let g:lightline.component_type = {
             \ 'tabs': 'tabsel',
             \ 'readonly': 'error',
@@ -261,58 +331,81 @@ let g:lightline.component_type = {
             \ 'linter_errors': 'error'
             \ }
 
+" lightline 現在のgitブランチ
 function! GitBranch() abort
   let l:branch = fugitive#head()
-  return l:branch == '' ? '' : printf("\uf418 %s", branch)
+  return l:branch == '' ? '' : printf(" %s", branch)
 endfunction
 
+" lightline ALEのエラー数
+" ale
 function! LightlineLinterErrors() abort
   let l:counts = ale#statusline#Count(bufnr(''))
   let l:all_errors = l:counts.error + l:counts.style_error
   let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf("%d \uf467", all_errors)
+  return l:counts.total == 0 ? '' : printf("%d ", all_errors)
 endfunction
 
+" lightline ALEの警告数
+" ale
 function! LightlineLinterWarnings() abort
   let l:counts = ale#statusline#Count(bufnr(''))
   let l:all_errors = l:counts.error + l:counts.style_error
   let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf("%d \uf421", all_non_errors)
+  return l:counts.total == 0 ? '' : printf("%d ", all_non_errors)
 endfunction
 
+" lightline OK
+" ale
 function! LightlineLinterOK() abort
   let l:counts = ale#statusline#Count(bufnr(''))
   let l:all_errors = l:counts.error + l:counts.style_error
   let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? "\uf4a1" : ''
-
+  return l:counts.total == 0 ? "" : ''
 endfunction
 
-autocmd User ALELint call lightline#update()
+" lightline Lint時にlightline表示更新
+" ale
+augroup LightLineOnALE
+  autocmd!
+  autocmd User ALELint call lightline#update()
+augroup END
 
-
+" fzf 表示領域
+let g:fzf_layout = { 'down': '~70%' }
+" fzf 選択キー
 let g:fzf_commands_expect = 'enter'
+
+" fzf ripgrepによる高速grep
 if executable('rg')
-    " set grepprg=rg\ --vimgrep
     command! -bang -nargs=* Rg
         \ call fzf#vim#grep(
         \   'rg --line-number --no-heading '.shellescape(<q-args>), 0,
-        \   fzf#vim#with_preview({'options': '--exact --reverse --delimiter : --nth 3..'}, 'right:50%:wrap'))
+        \   fzf#vim#with_preview({'options': '--exact --reverse --delimiter : --nth 3..'}, 'up:50%:wrap'))
 endif
-nnoremap <Space>p :Commands<CR>
-nnoremap <Space>ff :Files ~/<CR>
-nnoremap <Space>fg :GFiles<CR>
-nnoremap <Space>fh :History<CR>
-nnoremap <Space>fb :Buffers<CR>
-nnoremap <Space>fr :Rg<CR>
 
+" fzf コマンド検索
+nnoremap <Space>p :Commands<CR>
+" fzf ホームディレクトリからのファイル検索
+nnoremap <Space>ff :Files ~/<CR>
+" fzf Gitプロジェクト内のファイル検索
+nnoremap <Space>fg :GFiles<CR>
+" fzf ファイル履歴検索
+nnoremap <Space>fh :History<CR>
+" fzf バッファ検索
+nnoremap <Space>fb :Buffers<CR>
+" fzf カレントディレクトリ以下でgrep検索
+nnoremap <Space>g :Rg<CR>
+
+" NERDTree 現在のファイルを選択した状態でファイラを開く
 nnoremap <Space>fn :NERDTreeFind<CR>
+" NERDTree ファイラの表示切り替え
 nnoremap <Space>ft :NERDTreeToggle<CR>
 
-" ctrlp
+" ctrlp <Ctrl-p>でファイル履歴を検索
 let g:ctrlp_cmd = 'CtrlPMRUFiles'
 let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:20,result:50'
-let g:ctrlp_root_markers = ['Cargo.toml', 'stack.yaml', 'Gemfile']
+let g:ctrlp_root_markers = ['.git', 'Cargo.toml', 'stack.yaml', 'Gemfile']
 let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_mruf_max = 500
 let g:ctrlp_open_new_file = 'h'
@@ -322,11 +415,20 @@ if executable('rg')
     let g:ctrlp_use_caching = 0
 endif
 
-" smartinput
+" vim-smartinput-endwise rubyでdoに対応するendを自動入力
 call smartinput_endwise#define_default_rules()
 
-" ale
-let g:ale_set_highlights = 0
+" ale 諸設定
+let g:ale_set_highlights = 1
+" let g:ale_fix_on_save = 1
+" let g:ale_linters = {
+"       \ 'javascript': ['prettier']
+"       \ }
+" let g:ale_fixers = {
+"       \ 'javascript': ['prettier']
+"       \ }
+let g:ale_sign_column_always = 1
+" let g:ale_javascript_prettier_use_local_config = 1
 
 " ruby
 compiler ruby
@@ -337,45 +439,58 @@ let ruby_space_errors=1
 "     let &t_EI = "\<Esc>Ptmux;\<Esc>\<Esc>]50;CursorShape=0\x7\<Esc>\\"
 " endif
 
+" カーソル表示
 let &t_SI = "\<Esc>[6 q"
 let &t_SR = "\<Esc>[4 q"
 let &t_EI = "\<Esc>[0 q"
 
 if has('nvim')
-    " autocmd BufReadPost *.rs setlocal filetype=rust
+    " python3 設定
     let g:python3_host_prog = '/usr/local/bin/python3'
+    " ruby設定
     let g:ruby_host_prog = '~/.rbenv/versions/2.4.3/bin/neovim-ruby-host'
+    " LanguageClient
+    " 各言語の Language Server 設定
     let g:LanguageClient_serverCommands = {
                 \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
                 \ 'haskell': ['hie', '--lsp'],
+                \ 'html': ['html-languageserver', '--stdio'],
+                \ 'css': ['css-languageserver', '--stdio'],
+                \ 'javascript': ['javascript-typescript-stdio'],
+                \ 'typescript': ['javascript-typescript-stdio'],
                 \ }
     let g:LanguageClient_autoStart = 1
 
+    " LanguageClient カーソル下のドキュメント表示
     nnoremap <silent> K :call LanguageClient_textDocument_hover()<CR>
+    " LanguageClient カーソル下の定義ジャンプ
     nnoremap <silent> gd :call LanguageClient_textDocument_definition()<CR>
-    nnoremap <silent> <Space>jr :call LanguageClient_textDocument_rename()<CR>
-    nnoremap <silent> <Space>js :call LanguageClient_textDocument_documentSymbol()<CR>
-    nnoremap <silent> <Space>jl :call LanguageClient_textDocument_references()<CR>
-    nnoremap <silent> <Space>jf :call LanguageClient_textDocument_formatting()<CR>
-    nnoremap <silent> <Space>jF :call LanguageClient_textDocument_rangeFormatting()<CR>
+    " LanguageClient カーソル下のリネーム
+    nnoremap <silent> <Space>lr :call LanguageClient_textDocument_rename()<CR>
+    " LanguageClient シンボルリスト
+    nnoremap <silent> <Space>ls :call LanguageClient_textDocument_documentSymbol()<CR>
+    " LanguageClient カーソル下の参照リスト
+    nnoremap <silent> <Space>ll :call LanguageClient_textDocument_references()<CR>
+    " LanguageClient テキスト整形
+    nnoremap <silent> <Space>lf :call LanguageClient_textDocument_formatting()<CR>
+    " LanguageClient 範囲のテキスト整形
+    nnoremap <silent> <Space>lF :call LanguageClient_textDocument_rangeFormatting()<CR>
 endif
 
-" completion
-let g:cm_refresh_length=2
+let g:deoplete#enable_at_startup = 1
 
-" expand parameters
-let g:cm_completed_snippet_enable = 1
-
-" let g:neosnippet#enable_completed_snippet=1
+" UltiSnips スニペット展開
 let g:UltiSnipsExpandTrigger="<c-k>"
+" UltiSnips スニペット次の位置に移動
 let g:UltiSnipsJumpForwardTrigger="<c-j>"
+" UltiSnips スニペット前の位置に戻る
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+" UltiSnips スニペットエディタの表示方法
 let g:UltiSnipsEditSplit="vertical"
 
-" vim-devicons
+" vim-devicons 諸設定
 let g:webdevicons_conceal_nerdtree_brackets = 1
 let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
-
 " dir-icons
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 let g:DevIconsEnableFoldersOpenClose = 1
@@ -388,15 +503,46 @@ let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['css'] = ''
 let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['md'] = ''
 let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['txt'] = ''
 
-" ale
-let g:ale_sign_column_always = 1
-
-:autocmd Filetype ruby setlocal softtabstop=2
-:autocmd Filetype ruby setlocal sw=2
-:autocmd Filetype ruby setlocal ts=2
+autocmd Filetype ruby setlocal softtabstop=2
+autocmd Filetype ruby setlocal sw=2
+autocmd Filetype ruby setlocal ts=2
 
 " rustfmt
 let g:rustfmt_autosave = 1
 
 " vim-rooter
 let g:rooter_change_directory_for_non_project_files = 'current'
+
+" vim-prettier (formatter for js, ts, etc...)
+" let g:prettier#autoformat = 0
+" autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue Prettier
+
+" filetypeごとにインデント幅を設定
+augroup IndentSetting
+    autocmd!
+    autocmd FileType text setlocal shiftwidth=4
+    autocmd FileType markdown setlocal shiftwidth=4
+augroup end
+
+" Enable rufo (RUby FOrmat)
+let g:rufo_auto_formatting = 0
+let g:rufo_silence_errors = 0
+
+" Vim
+let g:indentLine_color_term = 239
+
+" GVim
+let g:indentLine_color_gui = '#43494C'
+
+" 自作スニペット置場
+set runtimepath+=~/.vim/snippets
+let g:UltiSnipsSnippetsDir = '~/.vim/snippets'
+
+" PHP
+let g:phpfmt_autosave = 0
+
+" Mac vimr用
+if has('gui_vimr')
+    " cursorlineすると遅くなる
+    set nocursorline
+endif
